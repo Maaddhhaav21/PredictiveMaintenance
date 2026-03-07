@@ -1,0 +1,12 @@
+data:
+  train_file: data/raw/train_FD001.txt
+  test_file: data/raw/test_FD001.txt
+  rul_file: data/raw/RUL_FD001.txt
+
+model:
+  test_size: 0.2
+  random_state: 42
+
+training:
+  epochs: 20
+  batch_size: 32
