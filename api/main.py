@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-import joblib
-import numpy as np
+from src.pipeline.prediction_pipeline import PredictionPipeline
 
 
 app = FastAPI()
 
-model = joblib.load("models/random_forest.pkl")
+pipeline = PredictionPipeline()
 
 
 @app.get("/")
@@ -17,8 +16,6 @@ def home():
 @app.post("/predict")
 def predict(features: list):
 
-    features = np.array(features).reshape(1, -1)
+    prediction = pipeline.predict(features)
 
-    prediction = model.predict(features)
-
-    return {"Predicted_RUL": float(prediction[0])}
+    return {"Predicted_RUL": prediction}
