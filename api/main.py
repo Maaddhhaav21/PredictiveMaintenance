@@ -1,21 +1,34 @@
 from fastapi import FastAPI
-from src.pipeline.prediction_pipeline import PredictionPipeline
-
+from pydantic import BaseModel
+import numpy as np
+import joblib
+import traceback
 
 app = FastAPI()
 
-pipeline = PredictionPipeline()
+model = joblib.load("models/random_forest.pkl")
+
+
+class Features(BaseModel):
+    features: list[float]
 
 
 @app.get("/")
 def home():
-
-    return {"message": "Predictive Maintenance API"}
+    return {"message": "Predictive Maintenance API running"}
 
 
 @app.post("/predict")
-def predict(features: list):
+def predict(data: Features):
 
-    prediction = pipeline.predict(features)
+    try:
+        features = np.array(data.features).reshape(1, -1)
 
-    return {"Predicted_RUL": prediction}
+        prediction = model.predict(features)
+
+        return {"Predicted_RUL": float(prediction[0])}
+
+    except Exception as e:
+        print("\n ERROR OCCURRED:")
+        traceback.print_exc()
+        return {"error": str(e)}
